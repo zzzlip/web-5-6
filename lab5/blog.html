@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的博客 - 实验5 重构版</title>
+  <link rel="stylesheet" href="./css/blog.css">
+</head>
+<body>
+<!-- ==================== 视图模板 ==================== -->
+<div id="app">
+  <header>
+    <div class="logo">My<span>Blog</span> · 我的博客</div>
+    <nav>
+      <a href="#" class="active">首页</a>
+      <a href="#">归档</a>
+      <a href="#">关于</a>
+      <a href="#message">留言板</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- ============ 2. 标题搜索（v-model / v-on / v-if / v-for / computed / watch） ============ -->
+    <form class="search-bar" @submit.prevent>
+      <input
+        type="text"
+        ref="keywordInput"
+        v-model.trim="keyword"
+        placeholder="输入关键字搜索文章标题，如：Vue">
+      <button type="submit">搜索</button>
+      <button type="button" class="ghost" @click="resetSearch">重置</button>
+      <p class="feedback">
+        {{ searchFeedback }}
+        <template v-if="keyword">（当前关键字：<em>{{ keyword }}</em>）</template>
+      </p>
+    </form>
+
+    <!-- ============ 1. 博文列表（插值 / v-bind / v-for） ============ -->
+    <h2 class="section-title">
+      最新博文 <small>共 {{ articles.length }} 篇，当前显示 {{ filteredArticles.length }} 篇</small>
+    </h2>
+
+    <div class="article-list" v-if="filteredArticles.length">
+      <article class="article" v-for="(article, index) in filteredArticles" :key="article.id">
+        <div class="cover" :style="{ background: article.cover }"></div>
+        <div class="body">
+          <h3>
+            <a :href="'#article-' + article.id" :title="'阅读全文：' + article.title">
+              {{ index + 1 }}. {{ article.title }}
+            </a>
+          </h3>
+          <p class="summary">{{ article.summary }}</p>
+          <p class="meta">
+            <span>作者：{{ article.author }}</span>
+            <span>日期：{{ article.date }}</span>
+            <span class="badge">{{ article.category }}</span>
+            <span>评论 {{ article.comments }}</span>
+            <span>点赞 {{ article.likes }}</span>
+          </p>
+        </div>
+      </article>
+    </div>
+    <p class="empty" v-else>没有找到与“{{ keyword }}”相关的博文，请更换关键字。</p>
+
+    <!-- ============ 3. 留言列表（v-if / v-for / v-on / ref / 修饰符） ============ -->
+    <h2 class="section-title" id="message">留言板 <small>共 {{ messages.length }} 条留言</small></h2>
+
+    <section class="message-board">
+      <form class="message-form" @submit.prevent="addMessage">
+        <input class="nickname" type="text" ref="nicknameInput" v-model.trim="newNickname" placeholder="昵称" maxlength="10">
+        <input class="content" type="text" ref="contentInput" v-model.trim="newContent" placeholder="说点什么吧，回车键发送">
+        <button type="submit" :disabled="!newContent">发表</button>
+      </form>
+
+      <p class="empty" v-if="!messages.length">还没有留言，快来抢沙发～</p>
+      <ul class="message-list" v-else>
+        <li v-for="item in messages" :key="item.id">
+          <span class="who" :title="item.nickname">{{ item.nickname }}</span>
+          <span class="text">{{ item.content }}</span>
+          <span class="time">{{ item.time }}</span>
+          <button type="button" class="del" @click="deleteMessage(item.id)">删除</button>
+        </li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>© 2026 MyBlog · 实验5 使用 Vue 3 选项式 API 重构</footer>
+</div>
+
+<!-- ==================== 依赖与逻辑 ==================== -->
+<script src="../shots/vendor/vue.global.js"></script>
+<!-- 离线时改用本地文件：<script src="./js/vue.global.js"></script> -->
+<script src="./js/vue-data.js"></script>
+<script>
+  const { createApp } = Vue;
+
+  createApp({
+    data() {
+      return {
+        /* 1. 博文列表：直接使用 vue-data.js 中的模拟数据 */
+        articles: blogArticles,
+        /* 2. 搜索 */
+        keyword: '',
+        searchFeedback: '尚未输入搜索关键词。',
+        /* 3. 留言板 */
+        messages: blogInitialMessages,
+        newNickname: '',
+        newContent: ''
+      };
+    },
+
+    computed: {
+      /* 根据关键字筛选文章：标题或摘要包含关键字（忽略大小写、忽略首尾空格） */
+      filteredArticles() {
+        const kw = this.keyword.trim().toLowerCase();
+        if (!kw) return this.articles;
+        return this.articles.filter(article =>
+          article.title.toLowerCase().includes(kw) ||
+          article.summary.toLowerCase().includes(kw)
+        );
+      }
+    },
+
+    watch: {
+      /* 关键字变化时，在搜索框下方提示变化信息 */
+      keyword(newValue, oldValue) {
+        if (!newValue) {
+          this.searchFeedback = oldValue
+            ? `已清空搜索条件，共显示全部 ${this.articles.length} 篇博文。`
+            : '尚未输入搜索关键词。';
+          return;
+        }
+        this.searchFeedback = oldValue
+          ? `关键字由“${oldValue}”变为“${newValue}”，共找到 ${this.filteredArticles.length} 篇博文。`
+          : `开始搜索“${newValue}”，共找到 ${this.filteredArticles.length} 篇博文。`;
+      }
+    },
+
+    methods: {
+      /* 重置搜索：输入框清空后 watch 会自动更新提示，这里再把焦点放回输入框 */
+      resetSearch() {
+        this.keyword = '';
+        this.searchFeedback = '已重置，共显示全部 ' + this.articles.length + ' 篇博文。';
+        this.$refs.keywordInput && this.$refs.keywordInput.focus();
+      },
+
+      /* 发表留言：判空 -> 加入数组 -> 清空输入框 -> 昵称框获得焦点 */
+      addMessage() {
+        const content = this.newContent.trim();
+        if (!content) return;
+        const now = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        this.messages.unshift({
+          id: Date.now(),
+          nickname: this.newNickname || '匿名用户',
+          content,
+          time: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`
+        });
+        this.newContent = '';
+        /* 附加功能：让昵称输入栏获得焦点（ref 引用模板元素） */
+        this.$refs.nicknameInput.focus();
+      },
+
+      /* 删除留言：保留 id 不等于被删除项 id 的留言，Vue 会重新渲染列表 */
+      deleteMessage(id) {
+        this.messages = this.messages.filter(item => item.id !== id);
+      }
+    }
+  }).mount('#app');
+</script>
+</body>
+</html>

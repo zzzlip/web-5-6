@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>局部组件演示</title>
+  <style>
+    body { font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif; padding: 24px; background: #f4f6fa; }
+    fieldset { background: #fff; border: 1px solid #dfe4ec; border-radius: 10px; padding: 16px 22px; max-width: 680px; }
+    legend { color: #2c8c63; }
+    h3 { margin: 8px 0; }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <fieldset>
+      <h3>局部组件练习：在同一页面中挂载两个独立的应用实例</h3>
+      <!-- 应用一：组件注册为 local-component -->
+      <div id="app1" style="padding:8px 0;border-bottom:1px dashed #e3e8f0">
+        <h4>应用一：&lt;local-component&gt;</h4>
+        <local-component></local-component>
+      </div>
+
+      <!-- 应用二：同一个组件以不同标签名再注册一次 -->
+      <div id="app2" style="padding:8px 0">
+        <h4>应用二：&lt;my-tip&gt;（同一个组件对象，注册名不同）</h4>
+        <my-tip></my-tip>
+      </div>
+    </fieldset>
+  </div>
+
+  <script src="../../shots/vendor/vue.global.js"></script>
+  <script>
+    const { createApp } = Vue;
+
+    /* 1. 定义局部组件（本质是一个包含 template / data 等选项的普通对象） */
+    const LocalComponent = {
+      data() {
+        return { title: '我自己定义的提示信息！', count: 0 };
+      },
+      template: `
+        <div>
+          <p>多个 HTML 元素时，使用根元素 div</p>
+          <h3 v-bind:title="title">h3-JS 自定义局部组件，鼠标停留有提示信息</h3>
+          <button type="button" @click="count++">点我 +1（组件内部状态，互不影响）：{{ count }}</button>
+        </div>`
+    };
+
+    /* 2. 在父组件的 components 选项中注册 */
+    createApp({ components: { 'local-component': LocalComponent } }).mount('#app1');
+    createApp({ components: { 'my-tip': LocalComponent } }).mount('#app2');
+  </script>
+</body>
+</html>

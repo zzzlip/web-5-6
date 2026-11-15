@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Vue 3 选项式 API 基本结构</title>
+  <style>
+    body { font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif; padding: 24px; background: #f4f6fa; color: #2c3e50; }
+    .card { max-width: 640px; margin: 0 auto; background: #fff; border-radius: 12px; padding: 20px 24px; box-shadow: 0 2px 12px rgba(31,45,61,.08); }
+    h2 { margin: 0 0 12px; font-size: 18px; }
+    button { font: inherit; margin-right: 8px; padding: 4px 12px; cursor: pointer; }
+    ul { color: #5b6675; font-size: 14px; padding-left: 20px; }
+    .hl { color: #e04f5f; }
+  </style>
+</head>
+<body>
+  <div id="app" class="card">
+    <h2>Vue 3 选项式 API：data / methods / computed / watch / 生命周期</h2>
+    <p>商品：{{ goods.name }}，单价 ￥{{ goods.price }}，数量
+      <button type="button" @click="goods.count > 0 && goods.count--">-</button>
+      {{ goods.count }}
+      <button type="button" @click="goods.count++">+</button>
+    </p>
+    <p>总价（computed，带缓存）：<span class="hl">￥{{ totalPrice }}</span></p>
+    <p>最近一次操作时间（watch 监听 totalPrice）：{{ lastChange }}</p>
+    <p>访问计数（{{ seconds }} 秒）：{{ count }}</p>
+    <ul>
+      <li v-for="item in logs" :key="item">{{ item }}</li>
+    </ul>
+    <button type="button" @click="logs = []">清空日志</button>
+  </div>
+
+  <script src="../../shots/vendor/vue.global.js"></script>
+  <script>
+    const { createApp } = Vue;
+
+    const app = createApp({
+      /* 1. data：返回响应式数据的函数 */
+      data() {
+        return {
+          goods: { name: '机械键盘', price: 399, count: 1 },
+          lastChange: '暂无',
+          count: 0,
+          seconds: 0,
+          logs: []
+        };
+      },
+      /* 2. methods：自定义方法 */
+      methods: {
+        log(message) {
+          const t = new Date().toLocaleTimeString();
+          this.logs.unshift(`[${t}] ${message}`);
+        }
+      },
+      /* 3. computed：默认只有 getter，也可以写 getter + setter */
+      computed: {
+        totalPrice: {
+          get() {
+            return this.goods.price * this.goods.count;
+          },
+          set(newValue) {
+            this.goods.count = Math.max(1, Math.round(newValue / this.goods.price));
+          }
+        }
+      },
+      /* 4. watch：监听响应式数据变化，可拿到新值和旧值 */
+      watch: {
+        totalPrice(newValue, oldValue) {
+          this.lastChange = `${oldValue} → ${newValue}`;
+          this.log(`总价变化：${oldValue} → ${newValue}`);
+        }
+      },
+      /* 5. 生命周期：挂载完成、卸载前 */
+      mounted() {
+        this.log('组件已挂载（mounted）');
+        this.timer = setInterval(() => this.seconds++, 1000);
+      },
+      beforeUnmount() {
+        clearInterval(this.timer);
+        console.log('组件即将卸载（beforeUnmount）');
+      }
+    });
+
+    app.mount('#app');
+  </script>
+</body>
+</html>

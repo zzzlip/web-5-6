@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的博客 - 实验6 组件化 + 路由版</title>
+  <link rel="stylesheet" href="./css/blog.css">
+  <style>
+    .fade-enter-active, .fade-leave-active { transition: opacity .18s ease, transform .18s ease; }
+    .fade-enter-from { opacity: 0; transform: translateY(6px); }
+    .fade-leave-to { opacity: 0; }
+  </style>
+</head>
+<body>
+  <!-- 根组件 App 的挂载点，内容全部由 router.js 中的组件渲染 -->
+  <div id="app"></div>
+
+  <!-- 1. 依赖：Vue 3 与 Vue Router 4 -->
+  <script src="../shots/vendor/vue.global.js"></script>
+  <script src="../shots/vendor/vue-router.global.js"></script>
+
+  <!-- 2. 模拟数据 -->
+  <script src="./js/data.js"></script>
+
+  <!-- 3. 公共组件（注意：先定义后注册） -->
+  <script src="./blog/components/SiteHeader.js"></script>
+  <script src="./blog/components/PostCard.js"></script>
+  <script src="./blog/components/PostList.js"></script>
+  <script src="./blog/components/SearchBox.js"></script>
+  <script src="./blog/components/MessageBoard.js"></script>
+
+  <!-- 4. 路由视图组件 -->
+  <script src="./blog/views/HomeView.js"></script>
+  <script src="./blog/views/ArticleView.js"></script>
+  <script src="./blog/views/CategoryView.js"></script>
+  <script src="./blog/views/AboutView.js"></script>
+  <script src="./blog/views/MessageView.js"></script>
+  <script src="./blog/views/NotFoundView.js"></script>
+
+  <!-- 5. 路由配置 + 根组件 + 挂载 -->
+  <script src="./blog/router.js"></script>
+</body>
+</html>

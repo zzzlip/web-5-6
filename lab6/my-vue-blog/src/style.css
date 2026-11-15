@@ -1,0 +1,94 @@
+/* 全局样式：由实验5的 blog.css 整理而来（Vite 中放在 src/style.css 全局引入） */
+/* ========== 博客主页样式（沿用实验4的页面结构） ========== */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  color: #2c3e50;
+  background: #f4f6fa;
+  line-height: 1.7;
+}
+a { color: #2c8c63; text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { font: inherit; cursor: pointer; }
+
+/* 顶部导航 */
+header {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px; height: 60px; color: #fff;
+  background: linear-gradient(90deg, #2c3e50, #35495e);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .15);
+}
+header .logo { font-size: 19px; font-weight: 600; letter-spacing: 1px; }
+header .logo span { color: #42b883; }
+header nav a { color: #cfd8e3; margin-left: 22px; font-size: 15px; }
+header nav a:hover, header nav a.active { color: #42b883; text-decoration: none; }
+
+.container { max-width: 960px; margin: 0 auto; padding: 24px 16px 60px; }
+
+/* 搜索栏 */
+.search-bar {
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  background: #fff; border-radius: 10px; padding: 14px 18px;
+  box-shadow: 0 2px 10px rgba(31, 45, 61, .06);
+}
+.search-bar input[type="text"] {
+  flex: 1; min-width: 200px; font: inherit; font-size: 15px;
+  padding: 8px 12px; border: 1px solid #d8dee9; border-radius: 8px; outline: none;
+}
+.search-bar input[type="text"]:focus { border-color: #42b883; box-shadow: 0 0 0 3px rgba(66, 184, 131, .15); }
+.search-bar button {
+  padding: 8px 18px; border: none; border-radius: 8px; color: #fff;
+  background: #42b883; font-size: 15px;
+}
+.search-bar button.ghost { background: #eef1f6; color: #5b6675; }
+.search-bar button:hover { opacity: .9; }
+.feedback { flex-basis: 100%; font-size: 13px; color: #8a94a6; }
+.feedback em { font-style: normal; color: #e04f5f; }
+
+.section-title { margin: 28px 0 12px; font-size: 19px; }
+.section-title small { font-size: 13px; color: #8a94a6; font-weight: normal; margin-left: 6px; }
+
+/* 博文列表 */
+.article-list { display: grid; gap: 16px; }
+.article {
+  display: flex; gap: 16px; background: #fff; border-radius: 12px; overflow: hidden;
+  box-shadow: 0 2px 10px rgba(31, 45, 61, .06); transition: transform .15s, box-shadow .15s;
+}
+.article:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(31, 45, 61, .12); }
+.article .cover {
+  flex: 0 0 8px; background: linear-gradient(135deg, #42b883, #347474);
+}
+.article .body { padding: 14px 18px 14px 4px; flex: 1; min-width: 0; }
+.article h3 { margin: 0 0 6px; font-size: 17px; }
+.article h3 a { color: #2c3e50; }
+.article h3 a:hover { color: #2c8c63; text-decoration: none; }
+.article .summary { margin: 0 0 8px; color: #5b6675; font-size: 14px; }
+.article .meta { font-size: 13px; color: #8a94a6; }
+.article .meta span { margin-right: 14px; }
+.badge { display: inline-block; font-size: 12px; padding: 0 8px; border-radius: 10px; background: #e6f7ef; color: #2c8c63; }
+.empty { padding: 28px; text-align: center; color: #98a2b3; background: #fff; border-radius: 12px; border: 1px dashed #d8dee9; }
+
+/* 留言板 */
+.message-board { margin-top: 12px; background: #fff; border-radius: 12px; padding: 18px 20px; box-shadow: 0 2px 10px rgba(31, 45, 61, .06); }
+.message-form { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
+.message-form input {
+  font: inherit; font-size: 14px; padding: 8px 12px;
+  border: 1px solid #d8dee9; border-radius: 8px; outline: none;
+}
+.message-form input:focus { border-color: #42b883; }
+.message-form input.nickname { flex: 0 0 140px; }
+.message-form input.content { flex: 1; min-width: 200px; }
+.message-form button { padding: 8px 18px; border: none; border-radius: 8px; background: #42b883; color: #fff; }
+.message-form button:disabled { background: #b9c4d0; cursor: not-allowed; }
+.message-list { list-style: none; margin: 10px 0 0; padding: 0; }
+.message-list li { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px dashed #eef0f4; font-size: 14px; }
+.message-list li:last-child { border-bottom: none; }
+.message-list .who { flex: 0 0 90px; color: #2c8c63; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.message-list .text { flex: 1; word-break: break-all; }
+.message-list .time { flex: 0 0 auto; color: #a6aebb; font-size: 12px; }
+.message-list .del { border: none; background: none; color: #d05353; font-size: 13px; padding: 0 4px; }
+.message-list .del:hover { text-decoration: underline; }
+
+footer { text-align: center; color: #98a2b3; font-size: 13px; padding: 24px 0 36px; }

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>实验5 Vue.js基本语法和常用指令</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 32px 16px 60px;
+      font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+      background: #f3f5f9; color: #2c3e50; line-height: 1.7;
+    }
+    .wrap { max-width: 860px; margin: 0 auto; }
+    h1 { text-align: center; font-size: 26px; margin: 0 0 6px; }
+    .sub { text-align: center; color: #8a94a6; margin: 0 0 28px; font-size: 14px; }
+    .card {
+      background: #fff; border-radius: 12px; padding: 20px 24px; margin-bottom: 22px;
+      box-shadow: 0 2px 12px rgba(31, 45, 61, .07);
+    }
+    .card h2 {
+      font-size: 17px; margin: 0 0 14px; padding-left: 10px;
+      border-left: 4px solid #42b883; line-height: 1.2;
+    }
+    code, .mono { font-family: "SFMono-Regular", Consolas, Menlo, monospace; }
+    code { background: #eef1f6; color: #d6336c; padding: 1px 5px; border-radius: 4px; font-size: 13px; }
+    button {
+      font: inherit; font-size: 14px; padding: 5px 14px; margin: 0 6px 6px 0; cursor: pointer;
+      border: 1px solid #42b883; color: #2c8c63; background: #fff; border-radius: 6px;
+    }
+    button:hover { background: #eaf8f1; }
+    input[type="text"] {
+      font: inherit; font-size: 14px; padding: 6px 10px; border: 1px solid #d3d9e3;
+      border-radius: 6px; outline: none;
+    }
+    input[type="text"]:focus { border-color: #42b883; }
+    .box { border: 1px dashed #cfd6e4; border-radius: 8px; padding: 12px 16px; background: #fafbfd; }
+    .box-html { border-color: #f0b429; background: #fff9e8; }
+    .box-html b { color: #c76a00; }
+    .active { color: #e04f5f !important; font-weight: 600; }
+    .tip { color: #8a94a6; font-size: 13px; margin: 8px 0 0; }
+    .tag { display: inline-block; font-size: 12px; color: #2c8c63; background: #e6f7ef; border-radius: 10px; padding: 0 8px; margin-left: 6px; }
+    ul.clean { list-style: none; margin: 0; padding: 0; }
+    ul.clean li { padding: 6px 0; border-bottom: 1px dashed #eef0f4; }
+    ul.clean li:last-child { border-bottom: none; }
+  </style>
+</head>
+<body>
+<div id="app" class="wrap">
+  <h1>实验5 Vue.js 基本语法和常用指令</h1>
+  <p class="sub">第一步：Vue 基础语法练习（选项式 API 综合演示）</p>
+
+  <!-- 1. 插值表达式 -->
+  <section class="card">
+    <h2>1. 插值表达式 {{ }}：{{ message }}</h2>
+    <label>姓名：<input type="text" v-model="name"></label>
+    <p>你好，<b>{{ name || '匿名同学' }}</b>！1 + 1 = {{ 1 + 1 }}，当前时间戳后 4 位：{{ Date.now() % 10000 }}</p>
+    <p class="tip">2 秒后标题会被定时器修改，用来观察响应式更新</p>
+  </section>
+
+  <!-- 2. v-html -->
+  <section class="card">
+    <h2>2. v-html：把字符串按 HTML 解析</h2>
+    <div class="box box-html" v-html="htmlText"></div>
+    <p class="tip">对比：插值表达式 <code v-text="'{{ htmlText }}'"></code> 会原样输出：{{ htmlText }}</p>
+    <button type="button" @click="htmlText = '<b>内容被</b>替换了'">替换 HTML 内容</button>
+  </section>
+
+  <!-- v-text / v-show -->
+  <section class="card">
+    <h2>3. v-text 与 v-show</h2>
+    <p>v-text：<span v-text="htmlText"></span></p>
+    <p>v-show：<span v-show="showTip">我通过 v-show 控制显示（DOM 仍存在，切换 display）</span></p>
+    <button type="button" @click="showTip = !showTip">{{ showTip ? '隐藏' : '显示' }}提示</button>
+  </section>
+
+  <!-- 3. v-bind -->
+  <section class="card">
+    <h2>4. v-bind：动态绑定属性</h2>
+    <p><a v-bind:href="url" :title="'跳转到 ' + url" :class="{ active: isActive }">Vue 官方文档（完整写法 v-bind:href）</a></p>
+    <p>
+      <button type="button" :class="{ active: isActive }" @click="isActive = !isActive">切换 active 样式</button>
+      <span class="tag">:class 对象语法</span>
+    </p>
+    <p><img :src="imgSrc" :alt="'动态图片：' + imgAlt" width="28" height="28" style="vertical-align:middle"> 动态 src</p>
+  </section>
+
+  <!-- 4. v-if -->
+  <section class="card">
+    <h2>5. v-if / v-else-if / v-else</h2>
+    <p>
+      <button type="button" @click="score = 92">92 分</button>
+      <button type="button" @click="score = 75">75 分</button>
+      <button type="button" @click="score = 50">50 分</button>
+    </p>
+    <p v-if="score >= 90">成绩等级：优秀（v-if）</p>
+    <p v-else-if="score >= 60">成绩等级：及格（v-else-if）</p>
+    <p v-else>成绩等级：不及格（v-else）</p>
+    <p v-show="score >= 60">这句话用 v-show 控制：及格时才显示（DOM 不销毁）</p>
+  </section>
+
+  <!-- 5. v-for -->
+  <section class="card">
+    <h2>6. v-for：数组与对象遍历</h2>
+    <ul class="clean">
+      <li v-for="(item, index) in fruits" :key="item.id">
+        {{ index + 1 }}. {{ item.name }} —— ￥{{ item.price.toFixed(2) }}
+        <span class="tag" v-if="item.price > 5">较贵</span>
+      </li>
+    </ul>
+    <p>遍历对象：<span v-for="(value, key, i) in user" :key="key">{{ i ? '，' : '' }}{{ key }}：{{ value }}</span></p>
+  </section>
+
+  <!-- 6. v-model -->
+  <section class="card">
+    <h2>7. v-model：双向绑定</h2>
+    <p><input type="text" v-model.trim="keyword" placeholder="输入内容，实时显示"></p>
+    <p>你输入了：<b>{{ keyword || '（空）' }}</b>（共 {{ keyword.length }} 个字符）</p>
+    <p>
+      <label><input type="checkbox" v-model="agree"> 我同意</label>，
+      <label><input type="radio" v-model="gender" value="男">男</label>
+      <label><input type="radio" v-model="gender" value="女">女</label>，
+      选择：{{ agree ? '已同意' : '未同意' }} / {{ gender }}
+    </p>
+  </section>
+
+  <!-- 7. v-on 与修饰符 -->
+  <section class="card">
+    <h2>8. v-on 与事件修饰符</h2>
+    <p>
+      计数：{{ count }}
+      <button type="button" @click="count++">@click 加一</button>
+      <button type="button" @click="add(5)">add(5)</button>
+    </p>
+    <div class="box" @click="outer">
+      外层 div（@click）
+      <p><button type="button" @click.stop="inner">.stop 阻止冒泡</button></p>
+      <p><input type="text" placeholder="按回车触发（.enter）" @keyup.enter="onEnter"></p>
+    </div>
+    <p class="tip">{{ log }}</p>
+  </section>
+
+  <!-- 8. computed 与 watch -->
+  <section class="card">
+    <h2>9. computed 计算属性 与 watch 侦听器</h2>
+    <p>商品总价（computed）：￥{{ totalPrice }}</p>
+    <p>商品总价（普通方法）：￥{{ getTotal() }}</p>
+    <p class="tip">computed 有缓存：数据不变时不会重新计算；方法每次渲染都会执行。</p>
+    <p><input type="text" v-model="city" placeholder="输入城市"></p>
+    <p class="tip">watch 记录：{{ watchLog }}</p>
+  </section>
+</div>
+
+<script src="../shots/vendor/vue.global.js"></script>
+<!-- 离线时可改用下载到本地的文件：<script src="./js/vue.global.js"></script> -->
+<script>
+  const { createApp } = Vue;
+
+  createApp({
+    data() {
+      return {
+        message: 'Hello Vue 3!',
+        name: '',
+        htmlText: '<b>加粗</b>、<i>斜体</i>、<span style="color:#e04f5f">带颜色的文字</span>',
+        showTip: true,
+        url: 'https://cn.vuejs.org/',
+        isActive: true,
+        imgSrc: 'data:image/svg+xml;utf8,' + encodeURIComponent(
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><path fill="#42b883" d="M0 0h10l10 17L30 0h10L20 40z"/></svg>'),
+        imgAlt: 'Vue Logo',
+        score: 92,
+        fruits: [
+          { id: 1, name: '苹果', price: 5.5 },
+          { id: 2, name: '香蕉', price: 3.2 },
+          { id: 3, name: '榴莲', price: 39.9 }
+        ],
+        user: { name: '张三', age: 20, major: '计算机科学与技术' },
+        keyword: '',
+        agree: false,
+        gender: '男',
+        count: 0,
+        log: '事件日志：',
+        city: '',
+        watchLog: '（尚无）',
+        cart: [
+          { name: '键盘', price: 199, num: 1 },
+          { name: '鼠标', price: 89, num: 2 }
+        ]
+      };
+    },
+    computed: {
+      totalPrice() {
+        return this.cart.reduce((sum, item) => sum + item.price * item.num, 0);
+      }
+    },
+    watch: {
+      city(newValue, oldValue) {
+        this.watchLog = `城市由「${oldValue}」变为「${newValue}」`;
+      }
+    },
+    methods: {
+      add(n) { this.count += n; },
+      outer() { this.log = '事件日志：冒泡到了外层 div'; },
+      inner() { this.log = '事件日志：只触发了内层按钮（.stop 阻止了冒泡）'; },
+      onEnter(e) {
+        this.log = '事件日志：回车提交了：' + e.target.value;
+        e.target.value = '';
+      },
+      getTotal() {
+        return this.cart.reduce((sum, item) => sum + item.price * item.num, 0);
+      }
+    },
+    mounted() {
+      setTimeout(() => { this.message = 'Hello Vue 3! 我已更新 ' + new Date().toLocaleTimeString(); }, 2000);
+    }
+  }).mount('#app');
+</script>
+</body>
+</html>
